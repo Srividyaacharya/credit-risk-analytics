@@ -500,35 +500,6 @@ Nothing is based on visual impression alone.
 | Delinquency = strongest predictor | IV/WOE | IV = 1.39 | Very Strong |
 | Utilization = second predictor | IV/WOE | IV = 1.00 | Very Strong |
 
----
-
-## Interview Notes
-
-**Q: Why did you not include a machine learning model?**
-
-This project is scoped as a data analyst deliverable, not a data science
-project. In a real BFSI analyst role, the analyst's job is to understand
-the data, identify patterns, validate them statistically, and communicate
-findings to business stakeholders — not to build predictive models. The SQL
-analysis, statistical testing, and Power BI dashboard cover exactly the
-skills that BFSI data analyst roles require.
-
-**Q: What is Information Value and why does it matter in credit risk?**
-
-IV measures how well a variable separates defaulters from non-defaulters.
-In BFSI, IV is used during scorecard development to decide which variables
-to include in a credit scoring model. Anything above 0.30 is considered a
-strong predictor. Delinquency history (IV = 1.39) and credit utilization
-(IV = 1.00) are both exceptionally strong — they would be the first two
-variables included in any credit scorecard for this portfolio.
-
-**Q: What is the most important finding from your analysis?**
-
-The delinquency escalation pattern on Page 2 of the dashboard. Customers
-with 5+ late payments default at 57.2% — but even 1 late payment jumps
-the rate from 2.73% to 12.21%. This means early warning systems should
-flag customers at the first missed payment, not wait for them to reach
-90+ DPD status. Early intervention is far cheaper than collections.
 
 ---
 
