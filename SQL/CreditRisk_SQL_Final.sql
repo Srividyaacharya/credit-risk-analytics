@@ -8,17 +8,18 @@
 --  1.  Database & Table Setup
 --  2.  Portfolio Overview  
 --  3.  Customer Profile    
---  4.  Age Risk Analysis      
---  5.  Delinquency Analysis    
---  6.  Debt Analysis       
---  7.  Credit Utilization    
---  8.  Dependents Analysis    
---  9.  Portfolio Quality Buckets  
---  10. Combined Risk Analysis     
---  11. Top Risky Customers        
---  12. Window Functions         
---  13. Executive Summary      
---  14. Views for Power BI 
+--  4.  Age Risk Analysis  
+--  5.  Income Analysis
+--  6.  Delinquency Analysis    
+--  7.  Debt Analysis       
+--  8.  Credit Utilization    
+--  9.  Dependents Analysis    
+--  10.  Portfolio Quality Buckets  
+--  11. Combined Risk Analysis     
+--  12. Top Risky Customers        
+--  13. Window Functions         
+--  14. Executive Summary      
+
 -- ============================================================
 
 
@@ -153,13 +154,49 @@ GROUP BY
 ORDER BY Default_Rate_Pct DESC;
 -- Insight: Younger borrowers tend to default more Older borrowers (65+) also show higher risk (fixed income)
 
+-- ============================================================
+--  SECTION 5 :  Income Analysis
+--  Purpose  : Do lower income customers default more?
+-- ============================================================
+
+SELECT
+    CASE
+        WHEN MonthlyIncome IS NULL   THEN '0. Unknown'
+        WHEN MonthlyIncome < 3000    THEN '1. Low (under $3K)'
+        WHEN MonthlyIncome < 6000    THEN '2. Mid ($3K - $6K)'
+        WHEN MonthlyIncome < 10000   THEN '3. Upper Mid ($6K - $10K)'
+        ELSE                              '4. High ($10K+)'
+    END                                                              AS Income_Band,
+    COUNT(*)                                                         AS Total_Customers,
+    SUM(SeriousDlqin2yrs)                                           AS Total_Defaults,
+    CAST(SUM(SeriousDlqin2yrs) * 100.0 / COUNT(*) AS DECIMAL(5,2)) AS Default_Rate_Pct,
+    CAST(MIN(MonthlyIncome) AS DECIMAL(10,0))                       AS Min_Income,
+    CAST(MAX(MonthlyIncome) AS DECIMAL(10,0))                       AS Max_Income,
+    CAST(AVG(MonthlyIncome) AS DECIMAL(10,0))                       AS Avg_Income
+FROM credit_risk
+GROUP BY
+    CASE
+        WHEN MonthlyIncome IS NULL   THEN '0. Unknown'
+        WHEN MonthlyIncome < 3000    THEN '1. Low (under $3K)'
+        WHEN MonthlyIncome < 6000    THEN '2. Mid ($3K - $6K)'
+        WHEN MonthlyIncome < 10000   THEN '3. Upper Mid ($6K - $10K)'
+        ELSE                              '4. High ($10K+)'
+    END
+ORDER BY Income_Band;
+
+--Insight
+-- Low income    : ~9.43%  default rate  (highest risk)
+-- Unknown       : ~7.50%  (missing income is itself a risk signal)
+-- Mid income    : ~6.74%
+-- Upper Mid     : ~5.50%
+-- High income   : ~4.62%  (lowest risk)
 
 -- ============================================================
---  SECTION 5 : DELINQUENCY ANALYSIS
+--  SECTION 6 : DELINQUENCY ANALYSIS
 --  Purpose  : Past late payments are the strongest default predictor
 -- ============================================================
 
--- 5.1 How does 90-day delinquency impact default rate?
+-- 6.1 How does 90-day delinquency impact default rate?
 -- This is the single most powerful predictor in the dataset
 
 SELECT
@@ -172,7 +209,7 @@ ORDER BY NumberOfTimes90DaysLate;
 -- Insight: Even 1 incident of 90-day late payment = massive jump in default rate
 
 
--- 5.2 Average delinquencies — defaulters vs non-defaulters
+-- 6.2 Average delinquencies — defaulters vs non-defaulters
 SELECT
     CASE
         WHEN SeriousDlqin2yrs = 1 THEN 'Defaulted'
@@ -187,7 +224,7 @@ GROUP BY SeriousDlqin2yrs;
 -- Insight: Defaulters have significantly more late payment incidents across all three severity levels
 
 
--- 5.3 First-time vs repeat late payers
+-- 6.3 First-time vs repeat late payers
 SELECT
     CASE
         WHEN (NumberOfTime30_59DaysPastDueNotWorse
@@ -215,11 +252,11 @@ ORDER BY Default_Rate_Pct DESC;
 
 
 -- ============================================================
---  SECTION 6 : DEBT ANALYSIS
+--  SECTION 7 : DEBT ANALYSIS
 --  Purpose  : High debt burden = higher financial stress = more defaults
 -- ============================================================
 
--- 6.1 Default rate by debt ratio band
+-- 7.1 Default rate by debt ratio band
 -- DebtRatio = Monthly debt payments / Monthly income
 SELECT
     CASE
@@ -243,11 +280,11 @@ ORDER BY Default_Rate_Pct DESC;
 
 
 -- ============================================================
---  SECTION 7 : CREDIT UTILIZATION ANALYSIS
+--  SECTION 8 : CREDIT UTILIZATION ANALYSIS
 --  Purpose  : How much of credit limit is being used?
 -- ============================================================
 
--- 7.1 Default rate by credit utilization band
+-- 8.1 Default rate by credit utilization band
 -- RevolvingUtilization = Credit used / Credit limit (0 to 1)
 SELECT
     CASE
@@ -270,11 +307,11 @@ ORDER BY Default_Rate_Pct DESC;
 
 
 -- ============================================================
---  SECTION 8 : DEPENDENTS ANALYSIS
+--  SECTION 9 : DEPENDENTS ANALYSIS
 --  Purpose  : More dependents = more expenses = less money for repayment
 -- ============================================================
 
--- 8.1 Default rate by number of dependents
+--9.1 Default rate by number of dependents
 SELECT
     CASE
         WHEN NumberOfDependents IS NULL THEN 'Unknown'
@@ -303,12 +340,12 @@ ORDER BY Default_Rate_Pct DESC;
 
 
 -- ============================================================
---  SECTION 9 : PORTFOLIO QUALITY BUCKETS
+--  SECTION 10 : PORTFOLIO QUALITY BUCKETS
 --  Purpose  : Classify ALL customers into 4 health categories
 --             Like a traffic light system for the loan book
 -- ============================================================
 
--- 9.1 Portfolio bucket breakdown
+-- 10.1 Portfolio bucket breakdown
 -- Good Standing / Watch / Stressed / Defaulted
 SELECT
     CASE
@@ -354,11 +391,11 @@ ORDER BY Portfolio_Bucket;
 
 
 -- ============================================================
---  SECTION 10 : COMBINED RISK ANALYSIS
+--  SECTION 11 : COMBINED RISK ANALYSIS
 --  Purpose   : Find customers with MULTIPLE risk factors at once
 -- ============================================================
 
--- 10.1 High utilization AND high debt ratio together
+-- 11.1 High utilization AND high debt ratio together
 -- These "double stressed" customers are the most dangerous
 SELECT
     CASE
@@ -393,11 +430,11 @@ ORDER BY Default_Rate_Pct DESC;
 
 
 -- ============================================================
---  SECTION 11 : TOP RISKY CUSTOMERS
+--  SECTION 12 : TOP RISKY CUSTOMERS
 --  Purpose   : Identify specific high-risk individuals
 -- ============================================================
 
--- 11.1 Top 20 riskiest customers
+-- 12.1 Top 20 riskiest customers
 SELECT TOP 20
     CustomerID,
     Age,
@@ -421,11 +458,11 @@ ORDER BY
 
 
 -- ============================================================
---  SECTION 12 : WINDOW FUNCTIONS
+--  SECTION 13 : WINDOW FUNCTIONS
 --  Purpose   : Rank and percentile analysis — shows SQL expertise
 -- ============================================================
 
--- 12.1 Rank customers by monthly income (highest to lowest)
+-- 13.1 Rank customers by monthly income (highest to lowest)
 -- RANK() assigns position — ties get same rank
 SELECT TOP 100
     CustomerID,
@@ -439,7 +476,7 @@ ORDER BY Income_Rank;
 -- Insight: Shows which customers are highest earners in the portfolio
 
 
--- 12.2 Split customers into income deciles (10 equal groups)
+-- 13.2 Split customers into income deciles (10 equal groups)
 -- NTILE(10) puts customers in groups 1-10 by income
 -- Group 1 = highest income, Group 10 = lowest income
 
@@ -456,7 +493,7 @@ ORDER BY Income_Decile;
 --          Decile 1 = premium customers, Decile 10 = most vulnerable
 
 
--- 12.3 Default rate by income decile
+-- 13.3 Default rate by income decile
 -- This shows if lower income deciles have higher default rates
 SELECT
     Income_Decile,
@@ -482,7 +519,7 @@ ORDER BY Income_Decile;
 --          it confirms income is a strong predictor of default
 
 
--- 12.4 Running total of defaults by age group
+-- 13.4 Running total of defaults by age group
 -- Shows cumulative picture as age increases
 
 SELECT
@@ -537,12 +574,12 @@ ORDER BY
 
 
 -- ============================================================
---  SECTION 13 : EXECUTIVE SUMMARY
+--  SECTION 14 : EXECUTIVE SUMMARY
 --  Purpose   : One query that tells the complete portfolio story
 --              This is what you show in a boardroom presentation
 -- ============================================================
 
--- 13.1 Complete executive dashboard query
+-- 14.1 Complete executive dashboard query
 SELECT
     COUNT(*)                                                         AS Total_Customers,
     SUM(SeriousDlqin2yrs)                                           AS Total_Defaulters,
