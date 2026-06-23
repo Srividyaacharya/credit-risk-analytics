@@ -9,13 +9,13 @@
 ## Dashboard Preview
 
 ### Page 1 — Executive Overview
-![Executive Overview](powerbi/screenshots/page1_executive.png)
+![Executive Overview](PowerBi/Screenshots/page1_executive.png)
 
 ### Page 2 — Risk Drivers & Delinquency Analysis
-![Risk Drivers](powerbi/screenshots/page2_delinquency.png)
+![Risk Drivers](PowerBi/Screenshots/page2_delinquency.png)
 
 ### Page 3 — Customer Risk Segmentation & Scoring
-![Risk Segmentation](powerbi/screenshots/page3_segmentation.png)
+![Risk Segmentation](PowerBi/Screenshots/page3_segmentation.png)
 
 ---
 
@@ -30,7 +30,7 @@ This project builds a complete analytics pipeline:
 ```
 data/cs-training.csv (raw)
     │
-    ├── SQL → structured queries → segment analysis → Power BI views
+    ├── SQL → structured queries → segment analysis 
     │
     └── Python → data cleaning → EDA → statistical testing
                     │
