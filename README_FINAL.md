@@ -1,430 +1,447 @@
-# Credit Risk Analytics — BFSI Data Analyst Portfolio Project
+# Give Me Some Credit – Credit Risk Analysis
 
-> End-to-end credit risk analysis of 149,999 borrowers  
-> Tools: MS SQL Server | Python | Power BI  
-> Domain: Banking, Financial Services & Insurance (BFSI)
+---
+
+## Project Overview
+
+This project performs an end-to-end credit risk analysis on a real-world loan dataset sourced from Kaggle. Using SQL for data exploration, Python for EDA and statistical analysis, and Power BI for interactive dashboarding, the project uncovers the key drivers behind loan defaults and translates raw data into actionable business insights.
+
+The analysis follows a structured analytical workflow — from raw data ingestion and cleaning, through deep statistical testing, to a three-page executive dashboard designed for non-technical business stakeholders.
+
+**Objective:** Identify which customer characteristics and financial behaviours are most strongly associated with loan default, and present those findings in a clear, decision-ready format.
+
+**Business Context:** Financial institutions rely on credit risk models to make lending decisions. Understanding who is likely to default — and why — allows banks to set appropriate interest rates, limit exposure to high-risk segments, and intervene early with at-risk customers.
+
+---
+
+## Business Problem
+
+Credit default has direct financial consequences for lenders — every unrecovered loan is a loss. Without a data-driven understanding of default risk, institutions either lend too conservatively (losing revenue) or too loosely (absorbing losses).
+
+This analysis aims to answer:
+
+- What is the overall default rate in this portfolio?
+- Which customer segments default most frequently?
+- Are delinquency history, credit utilization, and income statistically significant predictors of default?
+- How can customers be segmented into actionable risk tiers?
+- What early warning signals can be monitored to prevent defaults?
+
+---
+
+## Dataset
+
+| Property | Detail |
+|---|---|
+| **Source** | [Kaggle – Give Me Some Credit](https://www.kaggle.com/c/GiveMeSomeCredit) |
+| **Rows** | 150,000 borrower records |
+| **Columns** | 11 features + 1 target |
+| **Target Variable** | `SeriousDlqin2yrs` — 1 if the borrower experienced 90+ day delinquency within 2 years, 0 otherwise |
+| **Default Rate** | 6.68% (class imbalance present) |
+
+### Feature Descriptions
+
+| Column | Description |
+|---|---|
+| `SeriousDlqin2yrs` | Target: 1 = defaulted, 0 = did not default |
+| `RevolvingUtilizationOfUnsecuredLines` | Ratio of revolving credit used vs total limit |
+| `age` | Customer age in years |
+| `NumberOfTime30-59DaysPastDueNotWorse` | Times 30–59 days late in past 2 years |
+| `DebtRatio` | Monthly debt payments divided by monthly income |
+| `MonthlyIncome` | Gross monthly income (USD) — has ~20% missing values |
+| `NumberOfOpenCreditLinesAndLoans` | Count of open credit accounts |
+| `NumberOfTimes90DaysLate` | Times 90+ days late — strongest default predictor |
+| `NumberRealEstateLoansOrLines` | Count of mortgage and real estate loans |
+| `NumberOfTime60-89DaysPastDueNotWorse` | Times 60–89 days late in past 2 years |
+| `NumberOfDependents` | Number of dependents (has ~2.6% missing values) |
+
+---
+
+## Project Objectives
+
+- Understand the demographic and financial profile of the borrower population
+- Identify which features are most strongly associated with loan default
+- Analyse missing values, outliers, and data quality issues systematically
+- Statistically validate observed patterns using hypothesis testing
+- Segment customers into meaningful risk tiers (High / Medium / Low Risk)
+- Build an interactive Power BI dashboard suitable for business stakeholders
+
+---
+
+## Tools & Technologies
+
+| Tool / Library | Purpose |
+|---|---|
+| **MS SQL Server (SSMS)** | Data validation, exploration, aggregation, customer segmentation |
+| **Python 3.13** | Data cleaning, EDA, statistical analysis, visualisation |
+| **Power BI** | Interactive three-page executive dashboard |
+| **Pandas** | Data manipulation and feature engineering |
+| **NumPy** | Numerical operations and array handling |
+| **Matplotlib & Seaborn** | Chart creation and statistical visualisation |
+| **SciPy** | T-tests, chi-square tests, statistical significance testing |
+| **Git & GitHub** | Version control and project hosting |
+
+---
+
+## Project Workflow
+
+```
+Raw Data (Kaggle CSV)
+        │
+        ▼
+1. Data Understanding      ── Schema review, column profiling, data types
+        │
+        ▼
+2. SQL Exploration          ── Portfolio overview, segmentation, delinquency analysis
+        │
+        ▼
+3. Data Cleaning (Python)  ── Missing value treatment, outlier capping, feature engineering
+        │
+        ▼
+4. EDA (Python)            ── 8 analytical charts, distribution analysis, pattern discovery
+        │
+        ▼
+5. Statistical Analysis    ── T-tests, chi-square, correlation, IV, skewness analysis
+        │
+        ▼
+6. Dashboard (Power BI)    ── 3-page interactive dashboard with filters
+        │
+        ▼
+7. Business Insights       ── Findings, recommendations, risk flags
+```
+
+---
+
+## SQL Analysis
+
+The SQL analysis was performed in MS SQL Server Management Studio across **14 structured sections**, covering the full analytical journey from setup to executive summary.
+
+**Section 1 – Database & Table Setup**
+Created the `CreditRiskDB` database and imported the 150,000-row CSV. Verified row count and previewed the first 5 records.
+
+**Section 2 – Portfolio Overview**
+Calculated total customers (150K), total defaulters (10K), total performing (140K), and the overall default rate (6.68%).
+
+**Section 3 – Customer Profile**
+Profiled the borrower base by average age, average monthly income, and income band distribution (Low / Middle / High).
+
+**Section 4 – Age Risk Analysis**
+Grouped customers into six age bands (18–24, 25–34, 35–44, 45–54, 55–64, 65+) and calculated default rate per band. The 25–34 group showed the highest default rate at 11.26%.
+
+**Section 5 – Income Analysis**
+Stratified customers into four income bands and compared default rates. Low-income customers defaulted at ~9.43% vs ~4.62% for high-income customers. Customers with missing income had a ~7.50% default rate — confirming missing income as a standalone risk signal.
+
+**Section 6 – Delinquency Analysis**
+Examined default rates across 30-day, 60-day, and 90-day late payment counts. Customers with 3+ incidents of 90-day delinquency showed a 60.45% default rate. Also segmented customers as "Never Late," "First Time Late," and "Repeat Offender."
+
+**Section 7 – Debt Analysis**
+Analysed default rates by debt ratio band (Low < 30%, Medium 30–60%, High 60%+). Higher debt burden consistently corresponded to higher default rates.
+
+**Section 8 – Credit Utilization Analysis**
+Customers using 70%+ of their revolving credit limit showed a 19.98% default rate, vs 2.13% for low-utilization customers.
+
+**Section 9 – Dependents Analysis**
+Examined default rate by family size. Customers with 4+ dependents had the highest stress indicators. Missing dependent data was flagged as an additional risk signal.
+
+**Section 10 – Portfolio Quality Buckets**
+Classified the entire portfolio into four health categories: Good Standing, Watch, Stressed, and Defaulted — providing a traffic-light view of portfolio health.
+
+**Section 11 – Combined Risk Analysis**
+Identified "Double High Risk" customers (high utilization AND high debt ratio simultaneously) — the most dangerous segment with the highest observed default rate.
+
+**Section 12 – Top Risky Customers**
+Queried the top 20 riskiest individual customers ranked by 90-day delinquency count and debt ratio — the type of list that would trigger collection calls in a real institution.
+
+**Section 13 – Window Functions**
+Used `RANK()`, `NTILE()`, and running `SUM()` over window partitions to rank customers by income, split into income deciles, and compute cumulative defaults by age group.
+
+**Section 14 – Executive Summary**
+A single query returning the complete portfolio story: total customers, defaulters, performing, default rate, average income, average age, average debt ratio, average credit utilization, and missing income count.
+
+---
+
+## Python Analysis
+
+### Data Cleaning
+
+- Removed 1 invalid record where `age = 0`
+- Imputed `MonthlyIncome` NULLs with the median value (5,400)
+- Imputed `NumberOfDependents` NULLs with 0
+- Capped outliers at the 99th percentile for `RevolvingUtilizationOfUnsecuredLines`, `DebtRatio`, and `MonthlyIncome` (Winsorisation — rows retained, not removed)
+- Final cleaned dataset: 149,999 rows
+
+### Feature Engineering
+
+- `TotalDelinquencies`: sum of all three late payment columns
+- `AgeBand`: six age group bins (18–24 through 65+)
+- `IncomeBand`: Low / Mid / High income categories
+- `UtilizationBand`: Low / Medium / High revolving utilization
+- `DebtBand`: Low / Medium / High debt ratio
+- `RiskBand`: customer-level risk tier (High / Medium / Low) based on utilization and delinquency thresholds
+
+### EDA Charts (8 Charts)
+
+| Chart | What It Shows |
+|---|---|
+| Chart 1 | Default overview — portfolio split between defaulters and non-defaulters |
+| Chart 2 | Default rate by age group — younger borrowers default more |
+| Chart 3 | Credit utilization distribution by default status |
+| Chart 4 | Monthly income distribution — defaulters vs non-defaulters |
+| Chart 5 | Delinquency history patterns — 30, 60, 90-day late payments |
+| Chart 6 | Missing data visualisation — which columns have nulls and how many |
+| Chart 7 | Correlation heatmap — what drives default most |
+| Chart 8 | Risk segmentation summary — High / Medium / Low risk bands |
+
+---
+
+## Statistical Analysis
+
+All statistical tests were performed in Python using `SciPy`, with results interpreted at the standard α = 0.05 significance level.
+
+### Descriptive Statistics
+
+| Metric | Value |
+|---|---|
+| Average Age | 52 years |
+| Median Monthly Income | $5,400 |
+| Mean Monthly Income | $6,142 (skewed upward by high earners) |
+| Average Credit Utilization | 32.0% |
+| Average Debt Ratio | 35% (post outlier capping) |
+| Average Total Delinquencies | 0.93 per customer |
+
+### T-Test (Independent Samples)
+
+Tested whether defaulters and non-defaulters differ significantly on key numeric features.
+
+| Feature | Non-Default Avg | Default Avg | T-Statistic | p-Value | Result |
+|---|---|---|---|---|---|
+| Monthly Income | $6,193 | $5,429 | 19.31 | < 0.0001 | ✅ Significant |
+| Age | 52.75 yrs | 45.93 yrs | 44.99 | < 0.0001 | ✅ Significant |
+| Credit Utilization | 0.29 | 0.69 | −113.32 | < 0.0001 | ✅ Significant |
+
+All three features showed statistically significant differences between defaulters and non-defaulters.
+
+### Chi-Square Test
+
+Tested whether categorical groupings (age band, income band) are statistically associated with default status.
+
+- **Age Group vs Default**: χ² statistically significant — age group is not independent of default (p < 0.05)
+- **Income Band vs Default**: χ² statistically significant — income group is not independent of default (p < 0.05)
+
+### Correlation Analysis
+
+Pearson correlation with the target variable `SeriousDlqin2yrs`:
+
+- `NumberOfTimes90DaysLate` — strongest positive correlation with default
+- `RevolvingUtilizationOfUnsecuredLines` — second strongest positive correlation
+- `age` — moderate negative correlation (older customers default less)
+- `MonthlyIncome` — weak negative correlation
+
+### Information Value (IV)
+
+Ranked features by their predictive power for default:
+
+- **Delinquency variables** — very strong predictors (IV > 0.3)
+- **Credit Utilization** — strong predictor
+- **Age** — moderate predictor
+- **Monthly Income** — moderate predictor
+- **Number of Dependents** — weak predictor
+
+### Skewness Analysis
+
+- `MonthlyIncome`: heavily right-skewed — a small number of very high earners pull the mean above the median
+- `DebtRatio`: extremely right-skewed — extreme outliers required 99th percentile capping
+- `TotalDelinquencies`: right-skewed — most customers have zero delinquencies
+- `age`: approximately symmetric
+
+---
+
+## Power BI Dashboard
+
+The dashboard spans three pages, each with age group and income band slicers for dynamic filtering.
+
+### Page 1 — Executive Overview
+
+**KPI Cards:** Total Customers (150K), Total Defaulters (10K), Default Rate (6.68%), Median Monthly Income ($5.40K), Median Debt Ratio (37%), Credit Utilization (32.0%)
+
+**Visuals:**
+- Portfolio composition donut chart — 93.32% performing vs 6.68% defaulted
+- Default rate by age group bar chart
+- Default rate by income segment bar chart
+- Default rate by credit utilization bar chart
+- Key Findings summary panel
+
+### Page 2 — Risk Drivers & Delinquency Analysis
+
+**KPI Cards:** High Risk Customers % (20%), Avg 90+ DPD (0.27), Customers with 90+ DPD % (5.56%), Avg Credit Lines (8.45)
+
+**Visuals:**
+- Impact of 90+ day delinquencies on default risk (0 incidents: 4.63% → 3+ incidents: 60.45%)
+- Impact of 60+ day delinquencies on default risk (0: 5.10% → 3+: 57.22%)
+- Impact of 30+ day delinquencies on default risk (0: 4.00% → 3+: 40.50%)
+- Default rate by age group × income segment cross-table (heat-coloured)
+- Key Risk Drivers summary panel
+
+### Page 3 — Customer Risk Segmentation & Scoring
+
+**KPI Cards:** High Risk Customers (33K), High Risk % (22%), High Risk Default Rate (20.7%), Low Risk Customers (89K)
+
+**Visuals:**
+- Customer distribution by risk tier donut chart — 59.32% Low, 21.82% High, 18.85% Medium
+- Default rate by risk tier bar chart — High Risk: 20.68% vs Low Risk: 2.84%
+- Risk tier by income segment cross-table
+- Customer profile by risk tier stacked age bar chart
+- Key Risk Drivers summary panel
+
+### Interactive Filters
+- Age Group slicer (All, 18–24, 25–34, 35–44, 45–54, 55–64, 65+)
+- Income Band slicer (All, Low, Mid, High)
+
+---
+
+## Key Findings
+
+**Portfolio Health**
+- Portfolio default rate is 6.68% across 150,000 customers, with 10,000 defaulters and 140,000 performing accounts. The dataset is heavily class-imbalanced.
+
+**Age**
+- Customers aged 25–34 have the highest default rate (11.26%), followed by 18–24 (10.46%). Default risk declines steadily with age. Customers aged 65+ show the lowest default rate (2.51%).
+
+**Income**
+- Low-income customers default at nearly twice the rate of high-income customers (9.43% vs 4.62%). Customers with missing income records default at 7.50%, making missing income itself a risk signal.
+
+**Delinquency History**
+- Delinquency history is the single strongest predictor of default. Customers with 3+ incidents of 90-day delinquency default at 60.45%. Even 1 incident of 30-day delinquency more than triples the default rate compared to never-late customers.
+
+**Credit Utilization**
+- Customers using more than 70% of their revolving credit limit default at 19.98% — nearly 10× the rate of low-utilization customers (2.13%). T-test confirms this difference is statistically significant (p < 0.0001).
+
+**Risk Segmentation**
+- 22% of customers (33K) are classified as High Risk, with a 20.68% default rate. High-risk customers default at over 7× the rate of low-risk customers. High credit utilization and delinquency history are concentrated in this segment.
+
+**Combined Risk**
+- Customers with both high credit utilization (70%+) and high debt ratio (60%+) represent a "Double High Risk" segment with the highest observed default rates in the portfolio.
+
+---
+
+## Business Recommendations
+
+**Risk Monitoring & Early Intervention**
+- Implement real-time monitoring for customers crossing the 30-day delinquency threshold. The data shows even a single 30-day late payment more than triples default risk — early outreach at this stage is far more cost-effective than collections.
+- Flag customers with 90-day delinquency as requiring immediate account review. A 60.45% default rate makes this a near-certain loss without intervention.
+
+**Lending Policy Improvements**
+- Apply stricter credit assessment for applicants aged 25–34 — the highest-risk age cohort. Consider requiring additional income verification or collateral for this segment.
+- Use credit utilization thresholds as a lending guardrail. Applicants already using 70%+ of existing revolving credit represent materially elevated risk and should face closer scrutiny.
+- Treat missing income data as an active risk flag, not a neutral data quality issue. Applicants with missing income show a 7.50% default rate — significantly above the portfolio average.
+
+**Customer Segmentation**
+- Segment the 33K High Risk customers for priority engagement, debt restructuring offers, or proactive credit limit reviews.
+- Protect and grow the 89K Low Risk segment. These customers (59% of the portfolio) present significant cross-sell and upsell opportunities with minimal default exposure.
+- Design differentiated product offerings by income band — high-income customers (4.62% default rate) can be offered premium credit products with lower pricing.
+
+**Areas for Further Investigation**
+- Explore interaction effects between age and income — the cross-table in the dashboard suggests that high-income young customers behave very differently from low-income young customers.
+- Investigate the "unknown income" cohort more deeply — this group's risk profile may warrant a dedicated sub-analysis.
+- Analyse the relationship between number of open credit lines and default to assess credit concentration risk.
 
 ---
 
 ## Dashboard Preview
 
 ### Page 1 — Executive Overview
-![Executive Overview](PowerBi/Screenshots/page1_executive.png)
+![Executive Overview](images/page1_executive.png)
 
 ### Page 2 — Risk Drivers & Delinquency Analysis
-![Risk Drivers](PowerBi/Screenshots/page2_delinquency.png)
+![Risk Drivers & Delinquency](images/page2_delinquency.png)
 
 ### Page 3 — Customer Risk Segmentation & Scoring
-![Risk Segmentation](PowerBi/Screenshots/page3_segmentation.png)
+![Customer Risk Segmentation](images/page3_segmentation.png)
 
 ---
 
-## Project Overview
+## Challenges Faced
 
-A financial institution wants to understand which borrowers are most likely
-to default on their loans — enabling smarter credit decisions, risk-based
-pricing, and early intervention before accounts go bad.
+**Missing Data**
+`MonthlyIncome` had approximately 20% missing values and `NumberOfDependents` had ~2.6% missing. Simple deletion would have lost too many rows and introduced bias. Missing values were imputed using median income and zero dependents respectively, with the missing income flag retained as a risk signal in SQL analysis.
 
-This project builds a complete analytics pipeline:
+**Outliers**
+`DebtRatio` had extreme values exceeding 4,000 (e.g., retirees with zero income). `RevolvingUtilizationOfUnsecuredLines` had values above 1.0 (which is mathematically invalid). These were handled via 99th percentile Winsorisation — capping rather than removing — to preserve all 150K records while eliminating distortion.
 
-```
-data/cs-training.csv (raw)
-    │
-    ├── SQL → structured queries → segment analysis 
-    │
-    └── Python → data cleaning → EDA → statistical testing
-                    │
-                    └── outputs/cs_cleaned.csv → Power BI dashboard
-```
+**Class Imbalance**
+The dataset is heavily imbalanced: only 6.68% of customers defaulted. This means standard accuracy metrics are misleading (a model that predicts "no default" for everyone achieves 93.32% accuracy while providing zero business value). The analysis focused on default rates by segment rather than raw counts to account for this imbalance. Predictive modelling (the natural next step) would require resampling techniques such as SMOTE.
+
+**Data Quality Issues**
+One record contained `age = 0`, which was removed as invalid. Several customers had `RevolvingUtilizationOfUnsecuredLines` values greater than 1.0, which was flagged and filtered in SQL analysis before being capped in Python. Extreme `DebtRatio` values required careful handling to avoid distorting income and debt analysis.
 
 ---
 
-## Key Findings
+## Future Enhancements
 
-| Finding | Value | Test Used |
-|---------|-------|-----------|
-| Overall default rate | 6.68% | Descriptive stats |
-| Highest risk age group | 25-34 (11.12% default) | T-Test p < 0.001 |
-| Delinquency — strongest predictor | IV = 1.39 | IV / WOE analysis |
-| 5+ late payments vs clean customers | 57.2% vs 2.7% — 21x difference | Chi-Square p < 0.001 |
-| Credit utilization — second predictor | IV = 1.00 | IV / WOE analysis |
-| High util (70%+) vs low util (<30%) | 19.88% vs 2.12% — 9x difference | Chi-Square p < 0.001 |
-| Low income vs High income default rate | 9.43% vs 4.62% | Chi-Square p < 0.001 |
-| All patterns statistically validated | All p < 0.001 | T-Test + Chi-Square |
+**Predictive Modelling**
+The cleaned dataset with engineered features is ready for classification modelling. Logistic Regression, Random Forest, and XGBoost models would be natural next steps. Given the class imbalance, evaluation should focus on AUC-ROC, Precision-Recall curves, and F1 score rather than accuracy.
 
----
+**Automated Reporting**
+Scheduled Python scripts could regenerate the cleaned dataset and statistical summary on a regular cadence, feeding updated data directly into the Power BI dashboard via DirectQuery or a scheduled refresh.
 
-## Tools Used
+**Real-Time Dashboard**
+Connecting the Power BI dashboard to a live SQL database would enable real-time portfolio monitoring — allowing risk managers to see today's high-risk customers and delinquency trends rather than a historical snapshot.
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| MS SQL Server (SSMS) | 2019+ | Data storage, 14-section analysis, Power BI views |
-| Python — Pandas | 2.x | Data cleaning, feature engineering |
-| Python — Matplotlib / Seaborn | Latest | 7 EDA charts |
-| Python — Scipy | Latest | T-Test, Chi-Square, Skewness, Correlation |
-| Python — Custom functions | — | WOE and Information Value (IV) |
-| Power BI Desktop | Latest | 3-page interactive dashboard with slicers |
-
----
-
-## Dataset
-
-**Source:** [Give Me Some Credit — Kaggle](https://www.kaggle.com/c/GiveMeSomeCredit/data)
-
-| Item | Detail |
-|------|--------|
-| Original rows | 150,000 |
-| Rows after cleaning | 149,999 |
-| Input columns | 11 features |
-| Target column | SeriousDlqin2yrs (1 = defaulted) |
-| Default rate | 6.68% |
-| CustomerID | C001 to C150000 |
-
-### Missing Values
-
-| Column | Missing | % | Fix |
-|--------|---------|---|-----|
-| MonthlyIncome | 29,731 | 19.82% | Filled with median ($5,400) |
-| NumberOfDependents | 3,924 | 2.62% | Filled with 0 |
-
-### Cleaning Approach
-
-```python
-# Step 1: Remove only age <= 0 (1 invalid row)
-df = df[df['age'] > 0].copy()
-
-# Step 2: Fill missing values — keep ALL rows
-df['MonthlyIncome']      = df['MonthlyIncome'].fillna(df['MonthlyIncome'].median())
-df['NumberOfDependents'] = df['NumberOfDependents'].fillna(0)
-
-# Step 3: Cap outliers at 99th percentile — do NOT remove rows
-for col in ['RevolvingUtilizationOfUnsecuredLines', 'DebtRatio', 'MonthlyIncome']:
-    df[col] = df[col].clip(upper=df[col].quantile(0.99))
-
-# Result: 149,999 rows retained
-```
-
-> **Why cap instead of remove?**
-> Removing rows with extreme values would drop 25,934 rows (17.3%).
-> Capping at the 99th percentile preserves all customers while
-> controlling the influence of extreme values on the analysis.
+**Additional Statistical Testing**
+- Logistic regression to quantify the independent contribution of each predictor
+- VIF analysis to assess multicollinearity between delinquency variables
+- Survival analysis to model time-to-default rather than binary outcome
+- Deeper subgroup analysis for the missing income cohort
 
 ---
 
 ## Project Structure
 
 ```
-credit-risk-analytics/
+credit-risk-analysis/
 │
 ├── data/
-│   └── cs-training.csv                         ← raw dataset from Kaggle
-│
-├── notebooks/
-│   ├── CreditRisk_EDA.ipynb                    ← 7 EDA charts
-│   └── CreditRisk_Statistical_Analysis.ipynb   ← 5 statistical tests
+│   ├── cs-training.csv              # Raw dataset (Kaggle)
+│   └── cleaned_data.xlsx            # Cleaned dataset used in Power BI
 │
 ├── sql/
-│   ├── CreditRisk_SQL_Final.sql                ← 14 SQL sections
-│   ├── CreditRisk_Segment_Queries.sql          ← segment default rate queries
-│   └── screenshots/
-│       ├── 01_portfolio_overview.png
-│       ├── 02_default_by_age.png
-│       ├── 03_default_by_income.png
-│       ├── 04_delinquency_analysis.png
-│       ├── 05_credit_utilization.png
-│       ├── 06_severity_comparison.png
-│       └── 07_executive_summary.png
+│   └── CreditRisk_SQL_Final.sql     # All 14 SQL sections (SSMS)
+│
+├── notebooks/
+│   ├── CreditRisk_EDA.ipynb         # Exploratory Data Analysis (8 charts)
+│   └── CreditRisk_Statistical_Analysis.ipynb  # Statistical tests & validation
 │
 ├── powerbi/
-│   ├── CreditRisk_Dashboard.pbix               ← Power BI dashboard
-│   └── screenshots/
-│       ├── page1_executive.png
-│       ├── page2_delinquency.png
-│       └── page3_segmentation.png
+│   └── CreditRisk_Dashboard.pbix    # Three-page Power BI dashboard
 │
-├── outputs/
-│   └── cs_cleaned.csv                          ← Python cleaned CSV used by Power BI
+├── images/
+│   ├── page1_executive.png          # Dashboard screenshot – Executive Overview
+│   ├── page2_delinquency.png        # Dashboard screenshot – Risk Drivers
+│   └── page3_segmentation.png       # Dashboard screenshot – Risk Segmentation
 │
 └── README.md
 ```
 
 ---
 
-## Section 1 — SQL Analytics
+## Skills Demonstrated
 
-**Files:** `sql/CreditRisk_SQL_Final.sql` | `sql/CreditRisk_Segment_Queries.sql`
-
-**Database:** MS SQL Server | Database: CreditRiskDB | Table: credit_risk
-
-### What the SQL covers
-
-| # | Section | Key Output |
-|---|---------|-----------|
-| 1 | Database & Table Setup | CreditRiskDB created, 150K rows imported |
-| 2 | Portfolio Overview | 6.68% default rate, 10,026 defaulters confirmed |
-| 3 | Customer Demographics | Default rate by age, income, dependents |
-| 4 | Delinquency Analysis | 30/60/90+ DPD severity, repeat vs first-time |
-| 5 | Credit Utilization | Utilization bands, debt ratio segmentation |
-| 6 | Combined Risk Analysis | High util + high debt ratio together |
-| 7 | Portfolio Quality Buckets | Good / Watch / Stressed / Defaulted |
-| 8 | Top 20 Riskiest Customers | CustomerID + risk score + key variables |
-| 9 | Window Functions | RANK(), NTILE() — income deciles |
-| 10 | Executive Summary | All KPIs in one query |
-| 11 | Segment Default Rates | Income, utilization, delinquency, debt ratio |
-| 12 | Severity Comparison | 30+ vs 60+ vs 90+ DPD default rates |
-| 13 | Age × Income Matrix | Combined segment cross-analysis |
-| 14 | Power BI Views | vw_RiskSummary, vw_CustomerRiskBands |
-
-### Sample Result — Delinquency Impact
-
-| Delinquency Band | Customers | Default Rate |
-|-----------------|-----------|-------------|
-| 0 incidents (clean) | 130,219 | 2.73% |
-| 1 incident | 7,852 | 12.21% |
-| 2-4 incidents | 8,104 | 29.90% |
-| 5+ incidents | 3,824 | 57.22% |
-
-> Customers with 5+ late payments default at **21x** the rate of clean customers
-
-### SQL Screenshots
-Results saved in `sql/screenshots/` — each major query result captured from SSMS.
+| Skill | Detail |
+|---|---|
+| **SQL Querying** | CTEs, window functions (RANK, NTILE, running SUM), CASE segmentation, multi-table aggregations across 14 analytical sections |
+| **Data Cleaning** | Median imputation, 99th percentile Winsorisation, invalid record filtering, null handling strategy |
+| **Exploratory Data Analysis** | 8 structured EDA charts covering distribution, default patterns, delinquency, income, utilization, and risk segmentation |
+| **Statistical Analysis** | Independent samples T-test, Chi-Square test, Pearson correlation, Information Value ranking, skewness and kurtosis analysis |
+| **Data Visualisation** | Matplotlib and Seaborn charts with consistent styling, annotation, and insight callouts |
+| **Power BI Dashboard Development** | Three-page interactive dashboard with KPI cards, bar charts, donut charts, cross-tables, and dynamic slicers |
+| **Business Storytelling** | Translating statistical findings into plain-English key findings, risk drivers panels, and actionable recommendations |
+| **Insight Generation** | Identifying non-obvious signals (missing income as a risk flag, combined utilization + debt ratio risk, age × income interaction effects) |
 
 ---
 
-## Section 2 — Python EDA
+## Author
 
-**File:** `notebooks/CreditRisk_EDA.ipynb`
+**Name:** [Your Name]
 
-**Input:** `data/cs-training.csv`
-**Output:** `outputs/cs_cleaned.csv` (used by Power BI)
+**LinkedIn:** [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
 
-### Charts Produced
-
-| Chart | Key Finding |
-|-------|------------|
-| `01_default_overview.png` | 6.68% default rate — severe class imbalance |
-| `02_default_by_age.png` | Ages 25-34 default at 11.12% — highest risk group |
-| `03_credit_utilization.png` | High util (70%+) = 19.88% default — 9x more than Low |
-| `04_income_vs_default.png` | Low income defaults at 9.43% vs High income 4.62% |
-| `05_delinquency_vs_default.png` | Strongest predictor — escalates sharply per incident |
-| `06_missing_data.png` | 19.82% MonthlyIncome missing — filled with median |
-| `07_risk_segmentation.png` | Full portfolio split across Low / Medium / High bands |
-
-### Descriptive Statistics
-
-| Metric | Age | Monthly Income | Debt Ratio | Utilization |
-|--------|-----|----------------|------------|-------------|
-| Mean | 52.3 | $6,805 | 0.35 | 0.32 |
-| Median | 52.0 | $5,400 | 0.23 | 0.16 |
-| Std Dev | 14.8 | $5,210 | 0.27 | 0.27 |
-
-> Income mean ($6,805) is much higher than median ($5,400) due to
-> high earners skewing the average. Median is the correct measure for income.
-
----
-
-## Section 3 — Statistical Analysis
-
-**File:** `notebooks/CreditRisk_Statistical_Analysis.ipynb`
-
-All patterns found in EDA are **statistically validated** — nothing is
-based on visual impression alone.
-
-### T-Test — Are Defaulters Truly Different?
-
-| Variable | Non-Default Avg | Default Avg | P-Value | Significant |
-|----------|----------------|-------------|---------|-------------|
-| Monthly Income | $6,194 | $5,429 | < 0.001 | Yes ✓ |
-| Age | 52.8 years | 45.9 years | < 0.001 | Yes ✓ |
-| Credit Utilization | 0.30 | 0.70 | < 0.001 | Yes ✓ |
-
-> P-value < 0.05 = the difference is REAL, not by chance.
-> Defaulters earn less, are younger, and use 2x more credit.
-
-### Chi-Square — Is the Category Pattern Real?
-
-| Variable | Chi-Square | P-Value | Significant |
-|----------|-----------|---------|-------------|
-| Delinquency Band | 23,092.7 | < 0.001 | Yes ✓ |
-| Utilization Band | 10,669.1 | < 0.001 | Yes ✓ |
-| Age Band | 2,018.8 | < 0.001 | Yes ✓ |
-| Income Band | 496.2 | < 0.001 | Yes ✓ |
-
-> All 4 category patterns are statistically significant — none are coincidences.
-
-### Information Value (IV) — Which Column Predicts Best?
-
-| Variable | IV | Predictive Strength |
-|----------|----|-------------------|
-| Delinquency History | 1.39 | Very Strong |
-| Credit Utilization | 1.00 | Very Strong |
-| Age | 0.25 | Medium |
-| Monthly Income | 0.05 | Weak |
-
-> Delinquency history (IV = 1.39) is the single best predictor.
-> Income alone (IV = 0.05) is surprisingly weak — it must be combined
-> with other variables to be useful.
-
-### Skewness Analysis
-
-| Variable | Skewness | Interpretation |
-|----------|----------|----------------|
-| Age | 0.23 | Symmetric — mean is reliable |
-| Credit Utilization | 0.91 | Mild skew — use median |
-| Monthly Income | 112.9 | Heavy skew — always use median |
-| Total Delinquencies | 21.3 | Heavy skew — use median |
-
----
-
-## Section 4 — Power BI Dashboard
-
-**File:** `powerbi/CreditRisk_Dashboard.pbix`
-**Data source:** `outputs/cs_cleaned.csv`
-
-### Page 1 — Executive Overview
-Board-level snapshot. A senior manager understands the full
-portfolio health in under 30 seconds.
-
-**Visuals:**
-- 6 KPI cards: Total Customers, Total Defaulters, Default Rate,
-  Median Income, Median Debt Ratio, Credit Utilization
-- Portfolio Composition donut (defaulters vs non-defaulters)
-- Default Rate by Age Group (horizontal bar)
-- Default Rate by Income Segment (column chart)
-- Default Rate by Credit Utilization (column chart)
-- Key Findings text box
-
-### Page 2 — Risk Drivers & Delinquency Analysis
-Deep-dive into delinquency severity levels. Colour-coded bars
-(green → amber → orange → dark red) show risk escalation visually.
-
-**Visuals:**
-- 4 KPI cards: High Risk %, Avg 90+ DPD, Customers with 90+ DPD %, Avg Credit Lines
-- Impact of 90+ Day Delinquencies on Default Risk (colour-coded bar)
-- Impact of 60+ Day Delinquencies on Default Risk (colour-coded bar)
-- Impact of 30+ Day Delinquencies on Default Risk (colour-coded bar)
-- Default Rate by Age × Income Segment (matrix with conditional formatting)
-- Interactive slicers: Age Group, Income Band
-- Key Risk Drivers text box
-
-**Why 3 separate delinquency charts?**
-Banks classify delinquency by severity — 30+ DPD (mild), 60+ DPD (serious),
-90+ DPD (near-default). Showing each separately reveals escalation:
-30+ = 40.50%, 60+ = 57.22%, 90+ = 60.45%. This is how real bank
-risk teams monitor their portfolio.
-
-### Page 3 — Customer Risk Segmentation & Scoring
-Risk band classification for every customer. Interactive slicers
-let the risk manager filter to any segment instantly.
-
-**Visuals:**
-- 4 KPI cards: High Risk Customers (red), High Risk %, High Risk Default Rate,
-  Low Risk Customers (green)
-- Customer Distribution by Risk Tier (donut — green/amber/red)
-- Default Rate by Risk Tier (colour-matched bar chart)
-- Risk Tier by Income Segment (matrix with conditional formatting)
-- Customer Profile — Risk Tier × Age Group (stacked bar)
-- Interactive slicers: Age Group, Income Band
-- Key Risk Drivers text box
-
-### Risk Segmentation Results
-
-| Risk Band | Customers | Default Rate | Bank Decision |
-|-----------|-----------|-------------|---------------|
-| Low Risk | 89,000 | 2.57% | Auto Approve |
-| Medium Risk | 28,000 | 2.84% | Manual Review |
-| High Risk | 33,000 | 20.68% | Require Collateral |
-
-> High Risk customers default at **8x** the rate of Low Risk customers
-
----
-
-## How to Run
-
-### Prerequisites
-```bash
-pip install pandas numpy matplotlib seaborn scipy
-```
-
-### Step 1 — SQL
-```
-1. Open SQL Server Management Studio (SSMS)
-2. Open sql/CreditRisk_SQL_Final.sql
-3. Run Section 1 first — creates CreditRiskDB and imports cs-training.csv
-4. Run Sections 2-13 for analysis queries
-5. Run Section 14 to create Power BI views
-6. Open sql/CreditRisk_Segment_Queries.sql for segment default rate analysis
-```
-
-### Step 2 — Python Notebooks
-```
-Run in order:
-1. notebooks/CreditRisk_EDA.ipynb
-   → Cleans data and saves outputs/cs_cleaned.csv
-
-2. notebooks/CreditRisk_Statistical_Analysis.ipynb
-   → Runs T-Test, Chi-Square, IV/WOE on the cleaned data
-```
-
-### Step 3 — Power BI
-```
-1. Open powerbi/CreditRisk_Dashboard.pbix
-2. Home → Transform Data → update source path to your local
-   outputs/cs_cleaned.csv
-3. Click Refresh — all 3 pages update automatically
-```
-
----
-
-## Business Takeaways
-
-**For a risk manager reading this project:**
-
-Customers with 3 or more past late payment incidents should trigger
-an automatic review flag. They default at a rate 21 times higher than
-customers with a clean payment history. A simple early warning system
-at the first missed payment would be far cheaper than collections later.
-
-Customers using more than 70% of their credit card limit are 9 times
-more likely to default than disciplined spenders. A monthly utilization
-alert to the relationship manager would identify at-risk customers before
-they miss their first EMI.
-
-Borrowers aged 25-34 represent the highest-risk demographic — not
-because of age itself, but because of shorter credit histories and higher
-financial commitments. Offering smaller initial credit limits with a
-6-month review is a better approach than rejection.
-
-Income alone is a weak predictor (IV = 0.05). The real danger signal is
-the combination of low income + high utilization + any delinquency history.
-No single variable tells the full story — all three together do.
-
----
-
-## SQL Screenshot Reference
-
-| File | Query Section | What It Shows |
-|------|--------------|---------------|
-| `01_portfolio_overview.png` | Executive Summary | 150K customers, 6.68% default rate |
-| `02_default_by_age.png` | Demographics — Age | 25-34 age group = 11.12% |
-| `03_default_by_income.png` | Segment Queries Q1 | Low income = 9.43% vs High = 4.62% |
-| `04_delinquency_analysis.png` | Delinquency — bands | 5+ incidents = 57.22% |
-| `05_credit_utilization.png` | Segment Queries Q2 | High util = 19.88% |
-| `06_severity_comparison.png` | Segment Queries Q7 | 30+ / 60+ / 90+ DPD comparison |
-| `07_executive_summary.png` | Segment Queries Q8 | All KPIs in one result |
-
----
-
-## Contact
-
-**[Your Name]**
-Data Analyst | BFSI Domain
-
-- LinkedIn : [Your LinkedIn URL]
-- Email    : [Your Email]
-- GitHub   : [Your GitHub Profile URL]
-
----
-
-*Built as an end-to-end BFSI data analyst portfolio project.*
-*SQL → Python EDA → Statistical Analysis → Power BI.*
+**GitHub:** [github.com/yourusername](https://github.com/yourusername)
