@@ -389,7 +389,8 @@ credit-risk-analysis/
 │   └── cleaned_data.xlsx            # Cleaned dataset used in Power BI
 │
 ├── sql/
-│   └── CreditRisk_SQL_Final.sql     # All 14 SQL sections (SSMS)
+│   ├── CreditRisk_SQL_Final.sql     # All 14 SQL sections (SSMS)
+|   └── screenshots     # SQL Query Outputs (SSMS)
 │
 ├── notebooks/
 │   ├── CreditRisk_EDA.ipynb         # Exploratory Data Analysis (8 charts)
