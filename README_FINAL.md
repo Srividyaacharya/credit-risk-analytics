@@ -115,6 +115,8 @@ Raw Data (Kaggle CSV)
 
 The SQL analysis was performed in MS SQL Server Management Studio across **14 structured sections**, covering the full analytical journey from setup to executive summary.
 
+[View SQL File](SQL/CreditRisk_SQL_Final.sql)
+
 **Section 1 – Database & Table Setup**
 Created the `CreditRiskDB` database and imported the 150,000-row CSV. Verified row count and previewed the first 5 records.
 
@@ -160,6 +162,8 @@ A single query returning the complete portfolio story: total customers, defaulte
 ---
 
 ## Python Analysis
+
+[View EDA and Stistical Analysis Notebook](notebooks/)
 
 ### Data Cleaning
 
@@ -349,13 +353,13 @@ The dashboard spans three pages, each with age group and income band slicers for
 ## Dashboard Preview
 
 ### Page 1 — Executive Overview
-![Executive Overview](images/page1_executive.png)
+![Executive Overview](PowerBi/Screenshots/page1_executive.png)
 
 ### Page 2 — Risk Drivers & Delinquency Analysis
-![Risk Drivers & Delinquency](images/page2_delinquency.png)
+![Risk Drivers & Delinquency](PowerBi/Screenshots/page2_delinquency.png)
 
 ### Page 3 — Customer Risk Segmentation & Scoring
-![Customer Risk Segmentation](images/page3_segmentation.png)
+![Customer Risk Segmentation](PowerBi/Screenshots/page3_segmentation.png)
 
 ---
 
@@ -372,25 +376,6 @@ The dataset is heavily imbalanced: only 6.68% of customers defaulted. This means
 
 **Data Quality Issues**
 One record contained `age = 0`, which was removed as invalid. Several customers had `RevolvingUtilizationOfUnsecuredLines` values greater than 1.0, which was flagged and filtered in SQL analysis before being capped in Python. Extreme `DebtRatio` values required careful handling to avoid distorting income and debt analysis.
-
----
-
-## Future Enhancements
-
-**Predictive Modelling**
-The cleaned dataset with engineered features is ready for classification modelling. Logistic Regression, Random Forest, and XGBoost models would be natural next steps. Given the class imbalance, evaluation should focus on AUC-ROC, Precision-Recall curves, and F1 score rather than accuracy.
-
-**Automated Reporting**
-Scheduled Python scripts could regenerate the cleaned dataset and statistical summary on a regular cadence, feeding updated data directly into the Power BI dashboard via DirectQuery or a scheduled refresh.
-
-**Real-Time Dashboard**
-Connecting the Power BI dashboard to a live SQL database would enable real-time portfolio monitoring — allowing risk managers to see today's high-risk customers and delinquency trends rather than a historical snapshot.
-
-**Additional Statistical Testing**
-- Logistic regression to quantify the independent contribution of each predictor
-- VIF analysis to assess multicollinearity between delinquency variables
-- Survival analysis to model time-to-default rather than binary outcome
-- Deeper subgroup analysis for the missing income cohort
 
 ---
 
