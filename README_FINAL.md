@@ -350,7 +350,7 @@ The dashboard spans three pages, each with age group and income band slicers for
 
 ---
 
-## Dashboard Preview : [View Dashboard Here](https://app.powerbi.com/view?r=eyJrIjoiOTQ0YzE0MzMtYzY1MC00YTQzLWI4ZTYtMmY5OWRkOWQzNzY3IiwidCI6IjU2MGY2MzA2LWZiZjItNGJhYy1hZTllLWQyMTQ4YzU5OTNiNyJ9)
+## Dashboard Preview : [Click Here](https://app.powerbi.com/view?r=eyJrIjoiOTQ0YzE0MzMtYzY1MC00YTQzLWI4ZTYtMmY5OWRkOWQzNzY3IiwidCI6IjU2MGY2MzA2LWZiZjItNGJhYy1hZTllLWQyMTQ4YzU5OTNiNyJ9)
 
 ### Page 1 — Executive Overview
 ![Executive Overview](PowerBi/Screenshots/page1_executive.png)
