@@ -427,6 +427,6 @@ credit-risk-analysis/
 
 **Name:** [Srividya]
 
-**LinkedIn:** [linkedin.com/in/yourprofile](https://linkedin.com/in/srividya-achar/)
+**LinkedIn:** [linkedin.com/in/Srividyaachar](https://linkedin.com/in/srividya-achar/)
 
 **GitHub:** [github.com/Srividyaacharya](https://github.com/Srividyaacharya)
